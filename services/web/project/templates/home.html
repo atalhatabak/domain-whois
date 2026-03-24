@@ -1,4 +1,4 @@
-<html data-theme="bumblebee">
+<html data-theme="light">
 <head>
     <title>{{ app_title }}</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.png') }}">
@@ -7,20 +7,86 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.0/themes.css" rel="stylesheet" type="text/css" />
+    <script>
+        (function () {
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        })();
+    </script>
 </head>
-<body class="p-8">
-<div id="content">
-    <h1 class="text-2xl mb-3"><a href="/">{{ app_title }}</a></h1>
-    <form method="POST" action="/" class="form pb-7">
-        <div class="flex justify-left">
-            <fieldset class="fieldset bg-base-200 border border-base-300 p-10 -ml-1 rounded-box">
-                <input id="domain" class="input" name="domain" placeholder="Domain" value="{{ domain }}" autofocus><BR>
-                <input class="btn btn-accent" type="submit" name="submit" value="Lookup" onclick="$('#loading').show();">
-            </fieldset>
+<body class="min-h-screen bg-base-200 px-4 py-10 sm:px-6">
+<div id="content" class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl items-center justify-center">
+    <div class="w-full space-y-6">
+        <div class="space-y-2 text-center">
+            <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl"><a href="/">{{ app_title }}</a></h1>
+            <p class="mx-auto max-w-2xl text-sm text-base-content/70 sm:text-base">
+                Look up domain details quickly and review both WHOIS and DNS results.
+            </p>
         </div>
-        <div id="loading" class="pt-7" style="display: none;"><span class="loading loading-circle loading-xl"></span></div>
-    </form>
-    {{ page_body|safe }}
+
+        <div class="rounded-[2rem] border border-base-300 bg-base-100/95 p-5 shadow-xl shadow-base-300/30 backdrop-blur sm:p-8">
+            <form method="POST" action="/" class="space-y-5">
+                <fieldset class="space-y-4">
+                    <label for="domain" class="text-sm font-medium text-base-content/70">Domain</label>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <input
+                            id="domain"
+                            class="input input-lg w-full rounded-2xl border-base-300 bg-base-100 shadow-sm focus:border-accent focus:outline-none"
+                            name="domain"
+                            placeholder="example.com"
+                            value="{{ domain }}"
+                            autofocus
+                        >
+                        <button
+                            class="btn btn-accent btn-lg rounded-2xl px-8"
+                            type="submit"
+                            onclick="$('#loading').show();"
+                        >
+                            Run Lookup
+                        </button>
+                    </div>
+                </fieldset>
+
+                <div id="loading" class="text-center" style="display: none;">
+                    <span class="loading loading-spinner loading-lg text-accent"></span>
+                </div>
+            </form>
+
+            <div class="mt-6 grid gap-4 lg:grid-cols-2">
+                <div class="rounded-2xl border border-base-300 bg-base-200/70 p-5 sm:p-6">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <h2 class="text-lg font-semibold">WHOIS Results</h2>
+                        <span class="badge badge-accent">WHOIS</span>
+                    </div>
+                    <div class="overflow-x-auto break-words font-mono text-sm leading-7 text-base-content/85">
+                        {% if whois_body %}
+                            {{ whois_body|safe }}
+                        {% else %}
+                            <p class="font-sans text-sm leading-6 text-base-content/60">
+                                Run a WHOIS lookup to view registration and ownership details for this domain.
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="rounded-2xl border border-base-300 bg-base-200/70 p-5 sm:p-6">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <h2 class="text-lg font-semibold">DNS Records</h2>
+                        <span class="badge badge-accent">DNS</span>
+                    </div>
+                    <div class="overflow-x-auto break-words font-mono text-sm leading-7 text-base-content/85">
+                        {% if dns_body %}
+                            {{ dns_body|safe }}
+                        {% else %}
+                            <p class="font-sans text-sm leading-6 text-base-content/60">
+                                Run a DNS lookup to list available records such as A, AAAA, MX, NS, TXT, CAA, and SOA.
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
