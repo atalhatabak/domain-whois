@@ -1,4 +1,6 @@
 /services/web/project/templates/custom.headers
 __pycache__/
 *.py[cod]
-*.pyo
+*.pyoservices/__pycache__
+services/web/__pycache__
+services/web/project/__pycache__
